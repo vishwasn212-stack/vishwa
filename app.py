@@ -2,12 +2,20 @@ import streamlit as st
 from groq import Groq
 import sqlite3
 from datetime import datetime
+import os
+from dotenv import load_dotenv
+
+# =========================
+# LOAD ENV VARIABLES
+# =========================
+load_dotenv()
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
 # =========================
 # GROQ API SETUP
 # =========================
 client = Groq(
-    api_key="YOUR_GROQ_API_KEY"
+    api_key=GROQ_API_KEY
 )
 
 # =========================
@@ -67,7 +75,6 @@ prompt = st.chat_input("Ask your legal question...")
 
 if prompt:
 
-    # Save user message
     st.session_state.messages.append(
         {"role": "user", "content": prompt}
     )
@@ -81,8 +88,7 @@ if prompt:
     with st.chat_message("assistant"):
 
         response = client.chat.completions.create(
-            model="mixtral-8b-32768",
-
+            model="mixtral-8x7b-32768",
             messages=[
                 {
                     "role": "system",
@@ -90,27 +96,20 @@ if prompt:
 You are an AI legal and social awareness assistant.
 
 Explain laws in simple language.
-
 Give educational information only.
-
 Do not provide harmful or illegal advice.
-
 Explain clearly with examples whenever possible.
 """
                 },
-
                 *st.session_state.messages
             ],
-
             temperature=0.5,
             max_tokens=1024
         )
 
         answer = response.choices[0].message.content
-
         st.markdown(answer)
 
-    # Save assistant response
     st.session_state.messages.append(
         {"role": "assistant", "content": answer}
     )
@@ -131,7 +130,6 @@ Explain clearly with examples whenever possible.
 st.sidebar.title("📜 Chat History")
 
 cursor.execute("SELECT question, time FROM chats ORDER BY id DESC")
-
 rows = cursor.fetchall()
 
 for row in rows[:20]:
