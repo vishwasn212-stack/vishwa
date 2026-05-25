@@ -81,7 +81,7 @@ if prompt:
     with st.chat_message("assistant"):
 
         response = client.chat.completions.create(
-            model="mixtral-8x7b-32768",
+            model="mixtral-8b-32768",
 
             messages=[
                 {
