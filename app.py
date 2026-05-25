@@ -88,7 +88,7 @@ if prompt:
     with st.chat_message("assistant"):
 
         response = client.chat.completions.create(
-            MODEL_NAME = "llama-3.1-8b-instant",
+            model="llama-3.1-8b-instant",
             messages=[
                 {
                     "role": "system",
