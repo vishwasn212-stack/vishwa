@@ -81,7 +81,7 @@ if prompt:
     with st.chat_message("assistant"):
 
         response = client.chat.completions.create(
-            model="gpt-4.1-mini",
+            model="gpt-4o-mini",
 
             messages=[
                 {
