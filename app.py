@@ -6,8 +6,9 @@ from datetime import datetime
 # =========================
 # OPENAI API KEY
 # =========================
+
 client = OpenAI(
-    api_key="API_KEY"
+    api_key=st.secrets["OPENAI_API_KEY"]
 )
 
 # =========================
