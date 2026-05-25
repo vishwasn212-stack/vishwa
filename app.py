@@ -1,14 +1,13 @@
 import streamlit as st
-from openai import OpenAI
+from groq import Groq
 import sqlite3
 from datetime import datetime
 
 # =========================
-# OPENAI API KEY
+# GROQ API SETUP
 # =========================
-
-client = OpenAI(
-    api_key=st.secrets["OPENAI_API_KEY"]
+client = Groq(
+    api_key="YOUR_GROQ_API_KEY"
 )
 
 # =========================
@@ -37,6 +36,7 @@ st.title("⚖️ AI Law & Society Chatbot")
 
 st.markdown("""
 Ask questions about:
+
 - Indian laws
 - Cyber crime
 - FIR
@@ -67,7 +67,7 @@ prompt = st.chat_input("Ask your legal question...")
 
 if prompt:
 
-    # Show user message
+    # Save user message
     st.session_state.messages.append(
         {"role": "user", "content": prompt}
     )
@@ -81,7 +81,7 @@ if prompt:
     with st.chat_message("assistant"):
 
         response = client.chat.completions.create(
-            model="gpt-4o-mini",
+            model="mixtral-8x7b-32768",
 
             messages=[
                 {
@@ -100,7 +100,10 @@ Explain clearly with examples whenever possible.
                 },
 
                 *st.session_state.messages
-            ]
+            ],
+
+            temperature=0.5,
+            max_tokens=1024
         )
 
         answer = response.choices[0].message.content
