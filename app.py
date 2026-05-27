@@ -5,23 +5,20 @@ from datetime import datetime
 import os
 from dotenv import load_dotenv
 
-# ======================================================
 # LOAD ENV VARIABLES
-# ======================================================
+
 load_dotenv("api.env")
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
-# ======================================================
 # GROQ CLIENT
-# ======================================================
+
 client = Groq(
     api_key=GROQ_API_KEY
 )
 
-# ======================================================
 # DATABASE SETUP
-# ======================================================
+
 conn = sqlite3.connect(
     "chat_history.db",
     check_same_thread=False
@@ -40,18 +37,16 @@ CREATE TABLE IF NOT EXISTS chats (
 
 conn.commit()
 
-# ======================================================
 # PAGE CONFIG
-# ======================================================
+
 st.set_page_config(
     page_title="AI Law & Society Chatbot",
     page_icon="⚖️",
     layout="wide"
 )
 
-# ======================================================
 # CUSTOM CSS
-# ======================================================
+
 st.markdown("""
 <style>
 
@@ -71,9 +66,8 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# ======================================================
 # TITLE
-# ======================================================
+
 st.title("⚖️ AI Law & Society Chatbot")
 
 st.markdown("""
@@ -89,9 +83,8 @@ st.markdown("""
 - Legal Awareness
 """)
 
-# ======================================================
 # SIDEBAR SETTINGS
-# ======================================================
+
 st.sidebar.title("⚙️ Chat Settings")
 
 answer_mode = st.sidebar.selectbox(
@@ -104,9 +97,8 @@ answer_mode = st.sidebar.selectbox(
     ]
 )
 
-# ======================================================
 # TOKEN MANAGEMENT
-# ======================================================
+
 if answer_mode == "Short":
 
     max_tokens = 250
@@ -175,33 +167,30 @@ Use:
 - Tables where necessary
 """
 
-# ======================================================
 # SESSION STATE
-# ======================================================
+
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# ======================================================
 # DISPLAY OLD SESSION CHATS
-# ======================================================
+
 for msg in st.session_state.messages:
 
     with st.chat_message(msg["role"]):
         st.markdown(msg["content"])
 
-# ======================================================
 # USER INPUT
-# ======================================================
+
 prompt = st.chat_input(
     "Ask your legal question..."
 )
 
-# ======================================================
 # PROCESS USER INPUT
-# ======================================================
+
 if prompt:
 
     # Save User Message
+
     st.session_state.messages.append({
         "role": "user",
         "content": prompt
@@ -210,9 +199,8 @@ if prompt:
     with st.chat_message("user"):
         st.markdown(prompt)
 
-    # ==================================================
     # AI RESPONSE
-    # ==================================================
+
     with st.chat_message("assistant"):
 
         try:
@@ -292,17 +280,15 @@ Give detailed answer.
 
         st.markdown(answer)
 
-    # ==================================================
     # SAVE ASSISTANT MESSAGE
-    # ==================================================
+
     st.session_state.messages.append({
         "role": "assistant",
         "content": answer
     })
 
-    # ==================================================
     # SAVE TO DATABASE
-    # ==================================================
+
     cursor.execute("""
     INSERT INTO chats (
         question,
@@ -318,14 +304,12 @@ Give detailed answer.
 
     conn.commit()
 
-# ======================================================
 # SIDEBAR CHAT HISTORY
-# ======================================================
+
 st.sidebar.title("📜 Chat History")
 
-# ======================================================
 # DELETE ALL CHATS
-# ======================================================
+
 if st.sidebar.button("🗑 Delete All Chats"):
 
     cursor.execute("DELETE FROM chats")
@@ -338,9 +322,8 @@ if st.sidebar.button("🗑 Delete All Chats"):
 
     st.rerun()
 
-# ======================================================
 # FETCH CHAT HISTORY
-# ======================================================
+
 cursor.execute("""
 SELECT id, question, time
 FROM chats
@@ -349,9 +332,8 @@ ORDER BY id DESC
 
 rows = cursor.fetchall()
 
-# ======================================================
 # SHOW HISTORY
-# ======================================================
+
 for row in rows[:20]:
 
     chat_id = row[0]
@@ -362,9 +344,8 @@ for row in rows[:20]:
 
         st.write(f"🕒 {chat_time}")
 
-        # ==============================================
         # LOAD CHAT BUTTON
-        # ==============================================
+
         if st.button(
             f"View Chat {chat_id}"
         ):
@@ -382,9 +363,8 @@ for row in rows[:20]:
                 st.info(f"Q: {data[0]}")
                 st.success(f"A: {data[1]}")
 
-        # ==============================================
         # DELETE SINGLE CHAT
-        # ==============================================
+
         if st.button(
             f"Delete Chat {chat_id}"
         ):
@@ -402,9 +382,8 @@ for row in rows[:20]:
 
             st.rerun()
 
-# ======================================================
 # EXTRA SIDEBAR INFO
-# ======================================================
+
 st.sidebar.markdown("---")
 
 st.sidebar.markdown("""
@@ -420,9 +399,8 @@ st.sidebar.markdown("""
 ✅ Delete Chats  
 """)
 
-# ======================================================
 # FOOTER
-# ======================================================
+
 st.markdown("---")
 
 st.caption("""
